@@ -9,7 +9,7 @@ const port = process.env.PORT;
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello World...');
 });
 app.get('/check', (req, res) => {
   res.send('API is working');
