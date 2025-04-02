@@ -1,0 +1,31 @@
+{
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "-": "^0.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.40.1",
+    "express": "^4.17.1",
+    "nodemon": "^3.1.9",
+    "pg": "^8.14.1",
+    "save-dev": "^0.0.1-security",
+    "ts-node": "^10.9.2"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is a template for typescript+express+drizzle+nodemon",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js",
+    "dev": "nodemon - exec 'ts-node' src/app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
