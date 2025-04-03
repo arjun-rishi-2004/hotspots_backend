@@ -28,7 +28,7 @@ export async function getEVChargingStations(lat, lon, radius) {
             }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Goog-Api-Key': API_KEY,
+                    'X-Goog-Api-Key': "AIzaSyCBtVOANSk33DZh_ei3uUitLvmKo_oY6xQ",
                     'X-Goog-FieldMask': 'places.id,places.name,places.types,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.googleMapsUri,places.evChargeOptions'
                 }
             });
