@@ -24,8 +24,8 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
 
         // Fetch EV Charging Stations & Places of Interest concurrently
         const [evStations, places] = await Promise.all([
-            getEVChargingStations(lat, lon, rad),
-            getPlacesOfInterest(lat, lon, rad)
+            getEVChargingStationsByQuadrant(lat, lon, rad),
+            getPlacesOfInterestByQuadrants(lat, lon, rad)
         ]);
         console.log(places);
         console.log("Evstation:",evStations);

@@ -71,6 +71,7 @@ export function filterPlaces(places: Amenity[]) {
             latitude: place.location.latitude,
             longitude: place.location.longitude,
             rating:place.rating,
+            userRatingCount:place.userRatingCount,
             // goodForChildren:place.goodForChildren,
             // restroom:place.restroom,
             // goodForGroups:place.goodForGroups,
@@ -105,6 +106,7 @@ export const filterEvStation=(Evstations:Amenity[])=>{
             latitude: Evstation.location.latitude,
             longitude: Evstation.location.longitude,
             rating:Evstation.rating,
+            userRatingCount:Evstation.userRatingCount,
             evChargeOptions:{
                 connectorcount: Evstation?.evChargeOptions?.connectorCount,
                 maxchargerate:Evstation?.evChargeOptions?.connectorAggregation?.maxChargerRateKw??null,
