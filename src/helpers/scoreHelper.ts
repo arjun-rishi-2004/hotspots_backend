@@ -1,4 +1,4 @@
-import { Amenity } from "../types";
+import { Amenity,Photo } from "../types";
 function toRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
 }
@@ -64,9 +64,31 @@ export function filterPlaces(places: Amenity[]) {
         let totalWeight = normalized * 9 + 1;  // Scale between 1 and 10
  
         return {
+            name:place.name,
+            id:place.id,
+            locationName:place.displayName.text,
+            address:place.formattedAddress,
             latitude: place.location.latitude,
             longitude: place.location.longitude,
+            rating:place.rating,
+            // goodForChildren:place.goodForChildren,
+            // restroom:place.restroom,
+            // goodForGroups:place.goodForGroups,
+            // parkingOptions:place.parkingOptions,
+            //outdoorSeating:place.outdoorSeating,
+            photo:filterPhotourl(place.photos),
             totalWeight: parseFloat(totalWeight.toFixed(1)) // Keep 1 decimal place
         };
     });
 }
+const filterPhotourl = (photos?:Photo[]): string[] => {
+    if (!photos || photos.length === 0) return [];
+
+    return photos.map(ph => {
+        const imgSrc = ph.flagContentUri.match(/image_key=.*?2s([A-Za-z0-9_-]+)/);
+        if (imgSrc && imgSrc[1]) {
+            return `https://lh3.googleusercontent.com/p/${imgSrc[1]}=w600-h400`;
+        }
+        return ''; // or you can choose to filter it out later
+    }).filter(url => url !== '');
+};

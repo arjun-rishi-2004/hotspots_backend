@@ -27,11 +27,13 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
             getEVChargingStations(lat, lon, rad),
             getPlacesOfInterest(lat, lon, rad)
         ]);
-
+        console.log(places);
         const resamenities=calculateRatingBasedScore(places);
         const result_=rankAmenities(resamenities, evStations);
-
-        res.json(filterPlaces(result_));
+        res.status(200).json({suggestedStations:filterPlaces(result_),
+            evstations:evStations
+        })
+        res.json();
     } catch (error) {
         console.error("Error fetching places:", error);
         res.status(500).json({ error: "Internal server error" });
