@@ -32,7 +32,7 @@ export async function getPlacesOfInterest(lat: number, lon: number, radius: numb
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Goog-Api-Key': API_KEY,
-                    'X-Goog-FieldMask': 'places.id,places.name,places.types,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.googleMapsUri'
+                    'X-Goog-FieldMask': 'places.id,places.name,places.types,places.displayName,places.formattedAddress,places.location,places.photos,places.goodForChildren,places.restroom,places.outdoorSeating,places.parkingOptions,places.goodForGroups,places.accessibilityOptions,places.rating,places.userRatingCount,places.googleMapsUri'
                 }
             });
 
