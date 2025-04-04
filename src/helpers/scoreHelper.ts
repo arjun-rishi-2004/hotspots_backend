@@ -67,16 +67,12 @@ export function filterPlaces(places: Amenity[]) {
             name:place.name,
             id:place.id,
             locationName:place.displayName.text,
+            types:createType(place),
             address:place.formattedAddress,
             latitude: place.location.latitude,
             longitude: place.location.longitude,
             rating:place.rating,
             userRatingCount:place.userRatingCount,
-            // goodForChildren:place.goodForChildren,
-            // restroom:place.restroom,
-            // goodForGroups:place.goodForGroups,
-            // parkingOptions:place.parkingOptions,
-            //outdoorSeating:place.outdoorSeating,
             photo:filterPhotourl(place.photos),
             totalWeight: parseFloat(totalWeight.toFixed(1)) // Keep 1 decimal place
         };
@@ -95,7 +91,18 @@ const filterPhotourl = (photos?:Photo[]): string[] => {
     }).filter(url => url !== '');
 };
 
+export const createType=(place:Amenity):string[]=>{
+    let types=[...place.types]
+    if(place?.outdoorSeating) types.push("Outdoor seating");
+    if(place?.goodForChildren) types.push("Good for Children");
+    if(place?.restroom) types.push("Restroom");
+    if(place?.goodForGroups) types.push("Good for groups");
+    if(place?.parkingOptions?.freeParkingLot) types.push("Free Parking");
+    if(place?.parkingOptions?.paidParkingLot) types.push("Paid Parking");
+    if(place?.parkingOptions?.freeStreetParking) types.push("Free street Parking");
+    return types;
 
+}
 export const filterEvStation=(Evstations:Amenity[])=>{
     return Evstations.map(Evstation => {
         return {
