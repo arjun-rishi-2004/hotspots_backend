@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getEVChargingStations } from '../helpers/evHelper';
-import { getPlacesOfInterest } from '../helpers/amenitiesHelper';
+import { getPlacesOfInterest,getPlacesOfInterestByQuadrants } from '../helpers/amenitiesHelper';
 import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation} from '../helpers/scoreHelper'
 
 export const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
@@ -25,7 +25,7 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
         // Fetch EV Charging Stations & Places of Interest concurrently
         const [evStations, places] = await Promise.all([
             getEVChargingStations(lat, lon, rad),
-            getPlacesOfInterest(lat, lon, rad)
+            getPlacesOfInterestByQuadrants(lat, lon, rad)
         ]);
         console.log(places);
         console.log("Evstation:",evStations);
