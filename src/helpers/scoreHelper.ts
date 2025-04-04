@@ -85,7 +85,7 @@ const filterPhotourl = (photos?:Photo[]): string[] => {
     if (!photos || photos.length === 0) return [];
 
     return photos.map(ph => {
-        console.log("Photo_Url :",ph.flagContentUri)
+        // console.log("Photo_Url :",ph.flagContentUri)
         const imgSrc = ph.flagContentUri.match(/image_key=.*?2s([A-Za-z0-9_-]+)/);
         if (imgSrc && imgSrc[1]) {
             return `https://lh3.googleusercontent.com/p/${imgSrc[1]}=w600-h400`;

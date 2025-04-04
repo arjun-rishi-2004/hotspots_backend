@@ -101,3 +101,5 @@ export async function getPlacesOfInterestByQuadrants(lat: number, lon: number, r
     console.log(`Found ${uniqueResults.length} unique POIs across all quadrants`);
     return uniqueResults;
   }
+
+  
