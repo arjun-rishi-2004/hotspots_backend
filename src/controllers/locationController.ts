@@ -34,7 +34,7 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
         res.status(200).json({suggestedStations:filterPlaces(result_),
             evstations:filterEvStation(evStations)
         })
-        res.json();
+
     } catch (error) {
         console.error("Error fetching places:", error);
         res.status(500).json({ error: "Internal server error" });

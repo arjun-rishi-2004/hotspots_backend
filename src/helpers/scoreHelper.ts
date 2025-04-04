@@ -106,11 +106,11 @@ export const filterEvStation=(Evstations:Amenity[])=>{
             longitude: Evstation.location.longitude,
             rating:Evstation.rating,
             evChargeOptions:{
-                connectorcount: Evstation.evChargeOptions.connectorCount,
-                maxchargerate:Evstation.evChargeOptions.connectorAggregation.maxChargerRateKw,
-                avaliablecount:Evstation.evChargeOptions.connectorAggregation.availableCount,
-                outofserviveCount:Evstation.evChargeOptions.connectorAggregation.outOfServiceCount,
-                count:Evstation.evChargeOptions.connectorAggregation.count
+                connectorcount: Evstation?.evChargeOptions?.connectorCount,
+                maxchargerate:Evstation?.evChargeOptions?.connectorAggregation?.maxChargerRateKw??null,
+                avaliablecount:Evstation?.evChargeOptions?.connectorAggregation?.availableCount,
+                outofserviveCount:Evstation?.evChargeOptions?.connectorAggregation?.outOfServiceCount,
+                count:Evstation?.evChargeOptions?.connectorAggregation?.count
             }
         };
     });
