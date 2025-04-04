@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { getEVChargingStations } from '../helpers/evHelper';
 import { getPlacesOfInterest } from '../helpers/amenitiesHelper';
-import {calculateRatingBasedScore,rankAmenities,filterPlaces} from '../helpers/scoreHelper'
+import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation} from '../helpers/scoreHelper'
 
 export const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -28,10 +28,11 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
             getPlacesOfInterest(lat, lon, rad)
         ]);
         console.log(places);
+        console.log("Evstation:",evStations);
         const resamenities=calculateRatingBasedScore(places);
         const result_=rankAmenities(resamenities, evStations);
         res.status(200).json({suggestedStations:filterPlaces(result_),
-            evstations:evStations
+            evstations:filterEvStation(evStations)
         })
         res.json();
     } catch (error) {

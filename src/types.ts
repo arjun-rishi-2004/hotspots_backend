@@ -14,7 +14,7 @@ export interface Amenity {
     ratingBasedScore?:number;
     totalScore?:number;
     goodForChildren?:Boolean;
-    photos:Photo;
+    photos:Photo[];
 }
 interface Location {
     latitude: number;
