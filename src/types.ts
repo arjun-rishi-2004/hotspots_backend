@@ -46,10 +46,11 @@ interface EVConnectorAggregation {
     outOfServiceCount?:number
     count?: number;
     availabilityLastUpdateTime?:string;
+    maxChargerRateKw:number;
 }
 
 interface EVChargeOptions {
     connectorCount: number;
-    connectorAggregation: EVConnectorAggregation[];
+    connectorAggregation: EVConnectorAggregation;
 }
 
