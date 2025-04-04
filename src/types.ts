@@ -13,7 +13,15 @@ export interface Amenity {
     quadrantScore?: number;
     ratingBasedScore?:number;
     totalScore?:number;
-    goodForChildren?:Boolean;
+    outdoorSeating?:boolean;
+    restroom?:boolean;
+    goodForChildren?:boolean;
+    goodForGroups?:boolean;
+    parkingOptions:{
+        freeParkingLot:boolean,
+        paidParkingLot:boolean,
+        freeStreetParking:boolean,
+    }
     photos:Photo[];
 }
 interface Location {
