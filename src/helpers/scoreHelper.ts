@@ -34,7 +34,7 @@ export function rankAmenities(amenities: Amenity[], chargingStations: Amenity[])
             }
         }
         amenity={...amenity, chargerBasedScore: foundStation ? score : 3}
-        return { ...amenity, totalScore:(amenity.chargerBasedScore?amenity.chargerBasedScore:0)+(amenity.ratingBasedScore?amenity.ratingBasedScore:0)};
+        return { ...amenity, totalScore:(amenity.chargerBasedScore ?? 0) + (amenity.ratingBasedScore ?? 0)};
     }).sort((a, b) => b.totalScore! - a.totalScore!); // Sort once at the end
 }
 
@@ -59,7 +59,7 @@ export function filterPlaces(places: Amenity[]) {
     let maxScore = Math.max(...scores);
  
     return places.map(place => {
-        let normalized = (Math.log(place.totalScore??0+ 1) - Math.log(minScore + 1)) / 
+        let normalized = (Math.log((place.totalScore??0)+ 1) - Math.log(minScore + 1)) / 
                          (Math.log(maxScore + 1) - Math.log(minScore + 1) || 1);
         let totalWeight = normalized * 9 + 1;  // Scale between 1 and 10
  
@@ -82,15 +82,54 @@ const filterPhotourl = (photos?:Photo[]): string[] => {
     if (!photos || photos.length === 0) return [];
 
     return photos.map(ph => {
-        // console.log("Photo_Url :",ph.flagContentUri)
+        console.log("Photo_Url :",ph.flagContentUri)
         const imgSrc = ph.flagContentUri.match(/image_key=.*?2s([A-Za-z0-9_-]+)/);
         if (imgSrc && imgSrc[1]) {
-            return `https://lh3.googleusercontent.com/p/${imgSrc[1]}=w600-h400`;
+            return `https://lh3.googleusercontent.com/p/${imgSrc[1]}=w600-h400-k-no`;
         }
         return ''; // or you can choose to filter it out later
     }).filter(url => url !== '');
 };
+// const filterPhotourl1 = (photos?:Photo[]): any => {
+//     if (!photos || photos.length === 0) return [];
 
+//     return photos.map(ph => {
+//         // console.log("Photo_Url :",ph.flagContentUri)
+//         return getImageSrc(ph.flagContentUri); // or you can choose to filter it out later
+//     });
+// };
+
+// async function getImageSrc(url):Promise<any> {
+//     try {
+//         // Fetch the HTML content of the page
+//         let response = await fetch(url, {
+//             headers: { "User-Agent": "Mozilla/5.0" }
+//         });
+ 
+//         if (!response.ok) {
+//             throw new Error(`Failed to fetch page, status: ${response.status}`);
+//         }
+ 
+//         let html = await response.text();
+ 
+//         // Parse the HTML
+//         let parser = new DOMParser();
+//         let doc = parser.parseFromString(html, "text/html");
+ 
+//         // Find the image element with id "preview-image"
+//         let imgTag = doc.querySelector("#preview-image");
+ 
+//         if (imgTag) {
+//             return imgTag.src;
+//         } else {
+//             throw new Error("Image with id 'preview-image' not found.");
+//         }
+ 
+//     } catch (error) {
+//         console.error(error);
+//         return null;
+//     }
+// }
 export const createType=(place:Amenity):string[]=>{
     let types=[...place.types]
     if(place?.outdoorSeating) types.push("Outdoor seating");
