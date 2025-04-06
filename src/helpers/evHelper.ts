@@ -150,13 +150,15 @@ export async function getEVChargingStations(lat, lon, radius) {
 
 
 const flattenedResults = pointResults.flat();
-const displayNames = flattenedResults.map((place)=>
-  {
-    console.log("place: ",place)
-    return place
-  });
+// const displayNames = [...new Set(flattenedResults.map(place => {
+//   console.log("place: ", place);
+//   if(!place.evChargeOptions || Object.keys(place.evChargeOptions).length<=0){
+//     return;
+//   }
+//   return place.displayName.text;
+// }))];
 
-  // fs.writeFileSync("displayNames.json", JSON.stringify(displayNames, null, 2));
+  // fs.writeFileSync("stationswithooutevchargeoptions.json", JSON.stringify(displayNames, null, 2));
 
   // Remove duplicate places and filter locations outside the radius
 
@@ -169,7 +171,7 @@ console.log(pointResults.flat().length)
   pointResults.flat().forEach(place => {
     //console.log("place:",place);
 
-    if (!place.location || !place.location.latitude || !place.location.longitude||!place.evChargeOptions) return;
+    if (!place.location || !place.location.latitude || !place.location.longitude) return;
 
     //console.log(place.evChargeOptions.connectorAggregation);
 
