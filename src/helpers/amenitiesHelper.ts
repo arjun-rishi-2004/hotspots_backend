@@ -85,7 +85,7 @@ export async function getPlacesOfInterest(lat, lon, radius) {
   );
   // console.log(pointResults.flat())
   let flattenedResults = pointResults.flat();
-  fs.writeFileSync("suggestedPlaces.json", JSON.stringify(flattenedResults, null, 2));
+  // fs.writeFileSync("suggestedPlaces.json", JSON.stringify(flattenedResults, null, 2));
 
   const seenIds = new Set();
   const uniquePlaces = [];

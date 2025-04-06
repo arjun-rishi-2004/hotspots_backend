@@ -150,11 +150,11 @@ export async function getEVChargingStations(lat, lon, radius) {
 
 
 const flattenedResults = pointResults.flat();
-// const displayNames = flattenedResults.map((place)=>
-//   {
-//     console.log("place: ",place)
-//     return place
-//   });
+const displayNames = flattenedResults.map((place)=>
+  {
+    console.log("place: ",place)
+    return place
+  });
 
   // fs.writeFileSync("displayNames.json", JSON.stringify(displayNames, null, 2));
 

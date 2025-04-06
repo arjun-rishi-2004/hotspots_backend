@@ -31,13 +31,14 @@ export function rankAmenities(amenities: Amenity[], chargingStations: Amenity[])
         let nearbyChargingStations: NearbyChargingStations[] = [];
 
         for (const station of chargingStations) {
-            const distance = calculateDistance(
-                amenity.location.latitude, amenity.location.longitude,
-                station.location.latitude, station.location.longitude
-            );
+          
 
             if (isWithinRadius(amenity.location.latitude, amenity.location.longitude, 
                                station.location.latitude, station.location.longitude)) {
+                const distance = calculateDistance(
+                                    amenity.location.latitude, amenity.location.longitude,
+                                    station.location.latitude, station.location.longitude
+                                );
                 foundStation = true;
                 nearbyChargingStations.push(
                     {
