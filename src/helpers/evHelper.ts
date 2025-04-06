@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-
+import fs from "fs"
 dotenv.config();
 const API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_URL = 'https://places.googleapis.com/v1/places:searchNearby';
@@ -126,7 +126,7 @@ export async function getEVChargingStations(lat, lon, radius) {
 
       });
 
-
+      
 
       return response.data.places || [];
 
@@ -149,6 +149,14 @@ export async function getEVChargingStations(lat, lon, radius) {
   );
 
 
+const flattenedResults = pointResults.flat();
+// const displayNames = flattenedResults.map((place)=>
+//   {
+//     console.log("place: ",place)
+//     return place
+//   });
+
+  // fs.writeFileSync("displayNames.json", JSON.stringify(displayNames, null, 2));
 
   // Remove duplicate places and filter locations outside the radius
 

@@ -23,6 +23,9 @@ export interface Amenity {
         freeStreetParking:boolean,
     }
     photos:Photo[];
+    isExistingChargeStationFound?:boolean;
+    distanceOfNearestChargeStation?:number,
+    nearestChargeStationDetail?:NearbyChargingStations[];
 }
 interface Location {
     latitude: number;
@@ -48,6 +51,7 @@ interface DisplayName{
     languageCode:string;
 }
 interface EVConnectorAggregation {
+    length: any;
     type?: string;
     maxChargeRateKw?: number;
     availableCount?:number;
@@ -62,3 +66,10 @@ interface EVChargeOptions {
     connectorAggregation: EVConnectorAggregation;
 }
 
+export interface NearbyChargingStations{
+    location:Location;
+    markerID:string;
+    distance:number;
+    displayName:string
+
+}

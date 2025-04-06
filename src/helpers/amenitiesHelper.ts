@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-
+import fs from "fs"
 dotenv.config();
 const API_KEY = process.env.GOOGLE_API_KEY!;
 const BASE_URL = 'https://places.googleapis.com/v1/places:searchNearby';
@@ -68,7 +68,7 @@ export async function getPlacesOfInterest(lat, lon, radius) {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": API_KEY,
             "X-Goog-FieldMask":
-         'places.id,places.name,places.types,places.displayName,places.formattedAddress,places.location,places.photos,places.goodForChildren,places.restroom,places.outdoorSeating,places.parkingOptions,places.goodForGroups,places.accessibilityOptions,places.rating,places.userRatingCount,places.googleMapsUri' 
+         'places.id,places.name,places.types,places.displayName,places.formattedAddress,places.location,places.photos,places.goodForChildren,places.restroom,places.outdoorSeating,places.parkingOptions,places.goodForGroups,places.accessibilityOptions,places.rating,places.userRatingCount,places.googleMapsUri,places.evChargeOptions' 
         }
         }
       );
@@ -83,6 +83,9 @@ export async function getPlacesOfInterest(lat, lon, radius) {
   const pointResults = await Promise.all(
     samplePoints.map((point) => fetchPOIs(point.lat, point.lon))
   );
+  // console.log(pointResults.flat())
+  let flattenedResults = pointResults.flat();
+  fs.writeFileSync("suggestedPlaces.json", JSON.stringify(flattenedResults, null, 2));
 
   const seenIds = new Set();
   const uniquePlaces = [];
