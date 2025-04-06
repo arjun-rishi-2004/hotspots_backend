@@ -45,8 +45,12 @@ export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {
     return amenities.map(amenity => {
         const rating = amenity.rating || 0;
         const numReviews = amenity.userRatingCount || 0;
-        const rawScore = (rating * 0.9) + (Math.log(1 + numReviews) * 0.8);
-
+        let rawScore = (rating * 0.7) + (Math.log(1 + numReviews) * 0.6);
+        if (amenity?.parkingOptions?.freeParkingLot) {
+          rawScore += 0.4;
+      } else if (amenity?.parkingOptions?.paidParkingLot) {
+          rawScore += 0.3;
+      }
         const normalizedScore = 7 * (1 - Math.exp(-rawScore / 10));
         
         return { ...amenity, ratingBasedScore: normalizedScore };
@@ -69,6 +73,7 @@ export function filterPlaces(places: Amenity[]) {
             locationName:place.displayName.text,
             types:createType(place),
             address:place.formattedAddress,
+            googleMapsUri:place.googleMapsUri,
             latitude: place.location.latitude,
             longitude: place.location.longitude,
             rating:place.rating,
@@ -149,6 +154,7 @@ export const filterEvStation=(Evstations:Amenity[])=>{
             id:Evstation.id,
             locationName:Evstation.displayName.text,
             address:Evstation.formattedAddress,
+            googleMapsUri:Evstation.googleMapsUri,
             latitude: Evstation.location.latitude,
             longitude: Evstation.location.longitude,
             rating:Evstation.rating,
