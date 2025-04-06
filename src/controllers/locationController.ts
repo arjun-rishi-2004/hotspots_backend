@@ -27,8 +27,8 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
             getEVChargingStations(lat, lon, rad),
             getPlacesOfInterest(lat, lon, rad)
         ]);
-        console.log(places);
-        console.log("Evstation:",evStations);
+        //console.log(places);
+        //console.log("Evstation:",evStations);
         const resamenities=calculateRatingBasedScore(places);
         const result_=rankAmenities(resamenities, evStations);
         res.status(200).json({suggestedStations:filterPlaces(result_),

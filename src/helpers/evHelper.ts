@@ -120,7 +120,7 @@ export async function getEVChargingStations(lat, lon, radius) {
 
           'X-Goog-Api-Key': API_KEY,
 
-          'X-Goog-FieldMask':'places.id,places.name,places.types,places.displayName,places.formattedAddress,places.location,places.photos,places.goodForChildren,places.restroom,places.outdoorSeating,places.parkingOptions,places.goodForGroups,places.accessibilityOptions,places.rating,places.userRatingCount,places.googleMapsUri'
+          'X-Goog-FieldMask':'places.id,places.name,places.types,places.displayName,places.formattedAddress,places.location,places.rating,places.photos,places.userRatingCount,places.googleMapsUri,places.evChargeOptions'
 
         }
 
@@ -160,9 +160,9 @@ export async function getEVChargingStations(lat, lon, radius) {
 
   pointResults.flat().forEach(place => {
 
-    if (!place.location || !place.location.latitude || !place.location.longitude) return;
+    if (!place.location || !place.location.latitude || !place.location.longitude||!place.evChargeOptions) return;
 
-
+    //console.log(place.evChargeOptions.connectorAggregation);
 
     const placeLat = place.location.latitude;
 

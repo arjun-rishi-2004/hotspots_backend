@@ -82,7 +82,7 @@ const filterPhotourl = (photos?:Photo[]): string[] => {
     if (!photos || photos.length === 0) return [];
 
     return photos.map(ph => {
-        console.log("Photo_Url :",ph.flagContentUri)
+        //console.log("Photo_Url :",ph.flagContentUri)
         const imgSrc = ph.flagContentUri.match(/image_key=.*?2s([A-Za-z0-9_-]+)/);
         if (imgSrc && imgSrc[1]) {
             return `https://lh3.googleusercontent.com/p/${imgSrc[1]}=w600-h400-k-no`;
@@ -155,10 +155,11 @@ export const filterEvStation=(Evstations:Amenity[])=>{
             userRatingCount:Evstation.userRatingCount,
             evChargeOptions:{
                 connectorcount: Evstation?.evChargeOptions?.connectorCount,
-                maxchargerate:Evstation?.evChargeOptions?.connectorAggregation?.maxChargerRateKw??null,
-                avaliablecount:Evstation?.evChargeOptions?.connectorAggregation?.availableCount,
-                outofserviveCount:Evstation?.evChargeOptions?.connectorAggregation?.outOfServiceCount,
-                count:Evstation?.evChargeOptions?.connectorAggregation?.count
+                maxchargerate:Evstation?.evChargeOptions?.connectorAggregation[0]?.maxChargeRateKw??null,
+                type:Evstation?.evChargeOptions?.connectorAggregation[0]?.type??null,
+                avaliablecount:Evstation?.evChargeOptions?.connectorAggregation[0]?.availableCount,
+                outofserviveCount:Evstation?.evChargeOptions?.connectorAggregation[0]?.outOfServiceCount,
+                count:Evstation?.evChargeOptions?.connectorAggregation[0]?.count
             }
         };
     });
