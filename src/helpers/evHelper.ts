@@ -157,8 +157,9 @@ export async function getEVChargingStations(lat, lon, radius) {
   const uniquePlaces = [];
 
 
-
+console.log(pointResults.flat().length)
   pointResults.flat().forEach(place => {
+    //console.log("place:",place);
 
     if (!place.location || !place.location.latitude || !place.location.longitude||!place.evChargeOptions) return;
 
