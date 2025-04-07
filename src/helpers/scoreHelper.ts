@@ -1,4 +1,5 @@
 import { Amenity,NearbyChargingStations,Photo } from "../types";
+const OLA_API_KEY="vNw2opgPsevmRvTcyd5zD9q96Dhyhzo1Nd7ilDU3";
 function toRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
 }
@@ -21,55 +22,64 @@ function isWithinRadius(lat1: number, lon1: number, lat2: number, lon2: number, 
 // Define types for Amenities and Charging Stations
 
 // 🏆 Optimized function to rank amenities
-export function rankAmenities(amenities: Amenity[], chargingStations: Amenity[]): Amenity[] {
+export async function rankAmenities(amenities: Amenity[], chargingStations: Amenity[]): Promise<Amenity[]> {
     console.log("charging station: ", chargingStations[0]);
     console.log("amenities: ", amenities[1]);
-
-    return amenities.map(amenity => {
-        let score = 3; // Default highest priority
-        let foundStation = false;
-        let nearbyChargingStations: NearbyChargingStations[] = [];
-
-        for (const station of chargingStations) {
-          
-
-            if (isWithinRadius(amenity.location.latitude, amenity.location.longitude, 
-                               station.location.latitude, station.location.longitude)) {
-                const distance = calculateDistance(
-                                    amenity.location.latitude, amenity.location.longitude,
-                                    station.location.latitude, station.location.longitude
-                                );
-                foundStation = true;
-                nearbyChargingStations.push(
-                    {
-                        location: {
-                            latitude: station.location.latitude,
-                            longitude: station.location.longitude
-                        },
-                        markerID: `existing_${station.id}`,
-                        displayName: station.displayName.text,
-
-                        distance:parseFloat(distance.toFixed(2))*1000
-                    }); // Store all nearby stations with distance
-
-                // Determine the lowest score based on rating
-                score = station.rating >= 4 ? Math.min(score, 1) : Math.min(score, 2);
-            }
-
     
+    // Process each amenity - map to promises
+    const amenityPromises = amenities.map(async (amenity) => {
+      let score = 3; // Default highest priority
+      let foundStation = false;
+      let nearbyChargingStations: NearbyChargingStations[] = [];
+      
+      // Process each charging station for this amenity
+      // Make this inner function async too
+      const stationPromises = chargingStations.map(async (station) => {
+        if (isWithinRadius(
+          amenity.location.latitude, amenity.location.longitude,
+          station.location.latitude, station.location.longitude
+        )) {
+          // Await the distance calculation since it's a Promise
+          const distanceKm = await calculateDistanceUsingOla(
+            amenity.location.latitude, amenity.location.longitude,
+            station.location.latitude, station.location.longitude
+          );
+          
+          foundStation = true;
+          nearbyChargingStations.push({
+            location: {
+              latitude: station.location.latitude,
+              longitude: station.location.longitude
+            },
+            markerID: `existing_${station.id}`,
+            displayName: station.displayName.text,
+            distance: parseFloat(distanceKm.toFixed(2)) * 1000  // Convert km to meters
+          });
+          
+          // Determine the lowest score based on rating
+          score = station.rating >= 4 ? Math.min(score, 1) : Math.min(score, 2);
         }
-
-        return {
-            ...amenity,
-            chargerBasedScore: foundStation ? score : 3,
-            totalScore: (foundStation ? score : 3) + (amenity.ratingBasedScore ?? 0),
-            isExistingChargeStationFound: foundStation,
-            nearestChargeStationDetail: foundStation ? nearbyChargingStations : null,
-             // Array of all stations inside the radius with distances
-        };
-    }).sort((a, b) => b.totalScore! - a.totalScore!);
-}
-
+      });
+      
+      // Wait for all station checks to complete
+      await Promise.all(stationPromises);
+      
+      // Return the enriched amenity
+      return {
+        ...amenity,
+        chargerBasedScore: foundStation ? score : 3,
+        totalScore: (foundStation ? score : 3) + (amenity.ratingBasedScore ?? 0),
+        isExistingChargeStationFound: foundStation,
+        nearestChargeStationDetail: foundStation ? nearbyChargingStations : null,
+      };
+    });
+    
+    // Wait for all amenity processing to complete
+    const results = await Promise.all(amenityPromises);
+    
+    // Sort by total score and return
+    return results.sort((a, b) => b.totalScore! - a.totalScore!);
+  }
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371; // Earth's radius in km
@@ -82,7 +92,52 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c; // Distance in km
 }
 
-
+async function calculateDistanceUsingOla(
+    lat1: number, 
+    lon1: number, 
+    lat2: number, 
+    lon2: number, 
+  ): Promise<number> {
+    try {
+      // Format coordinates for API
+      const origins = `${lat1}%2C${lon1}`;
+      const destinations = `${lat2}%2C${lon2}`;
+      
+      // Create request URL
+      const url = `https://api.olamaps.io/routing/v1/distanceMatrix/basic?origins=${origins}&destinations=${destinations}&api_key=${OLA_API_KEY}`;
+      
+      // Generate a unique request ID
+      const requestId = `req-${Date.now()}`;
+      
+      // Make the API request
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-Request-Id': requestId
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Check if API returned success status
+      if (data.status !== 'SUCCESS') {
+        throw new Error(`API returned error status: ${data.status}`);
+      }
+      
+      // Extract distance in meters from response
+      const distanceInMeters = data.rows[0].elements[0].distance;
+      
+      // Convert to kilometers and return
+      return distanceInMeters / 1000;
+    } catch (error) {
+      console.error('Error calculating distance:', error);
+      throw error;
+    }
+  }
 
 
 export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {

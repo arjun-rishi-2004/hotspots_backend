@@ -4,75 +4,9 @@ import fs from "fs"
 dotenv.config();
 const API_KEY = process.env.GOOGLE_API_KEY!;
 const BASE_URL = 'https://places.googleapis.com/v1/places:searchNearby';
-const OLA_API_KEY = "vNw2opgPsevmRvTcyd5zD9q96Dhyhzo1Nd7ilDU3"
+
 // List of place types to fetch
 const POI_TYPES = ["restaurant", "cafe", "shopping_mall", "movie_theater", "hotel"];
-function generateRequestId() {
-  const timestamp = Date.now();
-  const randomStr = Math.random().toString(36).substring(2, 10);
-  return `req-${timestamp}-${randomStr}`;
-}
-// Function to check if a location is within the given radius using the Distance Matrix API
-// Function to check multiple locations against a center point using a single Distance Matrix API call
-async function checkLocationsWithinRadius(centerLat, centerLon, locations, radius) {
-  try {
-    // No locations to check
-    if (locations.length === 0) return [];
-    
-    // Format the destinations string for the API call
-    const destinations = locations
-      .map(loc => `${loc.latitude},${loc.longitude}`)
-      .join('|');
-    
-    // Make a single API call for all destinations
-    const response = await axios.get(
-      `https://api.olamaps.io/routing/v1/distanceMatrix/basic`,
-      {
-        params: {
-          origins: `${centerLat},${centerLon}`,
-          destinations: destinations,
-          api_key: OLA_API_KEY
-        },
-        headers: {
-          "X-Request-Id": generateRequestId()
-        }
-      }
-    );
-    
-    // Process the results and return locations within radius
-    const withinRadiusResults = [];
-    
-    if (response.data && 
-        response.data.rows && 
-        response.data.rows[0] && 
-        response.data.rows[0].elements) {
-      
-      const elements = response.data.rows[0].elements;
-      
-      // For each location, check if it's within the radius
-      for (let i = 0; i < locations.length; i++) {
-        if (elements[i] && elements[i].status === "OK") {
-          const distance = elements[i].distance;
-          if (distance <= radius) {
-            withinRadiusResults.push({
-              ...locations[i],
-              distance // Add the actual distance to the result
-            });
-          }
-        }
-      }
-    }
-    
-    return withinRadiusResults;
-  } catch (error) {
-    console.error("Error checking distances with API:", error);
-    // Fallback to Haversine if API fails
-    console.log("Falling back to Haversine formula");
-    return locations.filter(loc => 
-      haversine(centerLat, centerLon, loc.latitude, loc.longitude) <= radius
-    );
-  }
-}
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371000; // Earth radius in meters
@@ -152,56 +86,27 @@ export async function getPlacesOfInterest(lat, lon, radius) {
   // console.log(pointResults.flat())
   let flattenedResults = pointResults.flat();
   // fs.writeFileSync("suggestedPlaces.json", JSON.stringify(flattenedResults, null, 2));
-  const locationsToCheck = [];
-  const placesMap = new Map(); // Map to relate location indices to places
-  
-  flattenedResults.forEach((place, index) => {
-    if (!place || !place.location) return;
-    
-    const { latitude, longitude } = place.location;
-    if (!latitude || !longitude) return;
-    
-    // Add to locations array
-    locationsToCheck.push({
-      latitude,
-      longitude,
-      index // Keep track of original index
-    });
-    
-    // Map this location to the original place
-    placesMap.set(locationsToCheck.length - 1, place);
-  });
-  
-  // Batch check all locations against the center point
-  const locationsWithinRadius = await checkLocationsWithinRadius(
-    lat, lon, locationsToCheck, radius
-  );
-  
+
   const seenIds = new Set();
   const uniquePlaces = [];
 
-  locationsWithinRadius.forEach(loc => {
-    const place = placesMap.get(loc.index);
-    if (!place) return;
-    
-    // Add distance from API to the place object
-    place.distance = loc.distance;
-    
-    // Deduplicate based on place ID or name+location
+  pointResults.flat().forEach((place) => {
+    if (!place.location) return;
+
+    const { latitude, longitude } = place.location;
+    if (!isWithinRadius(lat, lon, latitude, longitude, radius)) return; // Filter out places outside radius
+
     if (place.id && !seenIds.has(place.id)) {
       seenIds.add(place.id);
       uniquePlaces.push(place);
     } else if (!place.id && place.name) {
-      const placeKey = `${place.name}-${loc.latitude}-${loc.longitude}`;
+      const placeKey = `${place.name}-${latitude}-${longitude}`;
       if (!seenIds.has(placeKey)) {
         seenIds.add(placeKey);
         uniquePlaces.push(place);
       }
     }
   });
-  
-  // Sort by distance (optional)
-  uniquePlaces.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-  
+
   return uniquePlaces;
 }

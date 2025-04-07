@@ -3,7 +3,7 @@ import { getEVChargingStations } from '../helpers/evHelper';
 import { getPlacesOfInterest} from '../helpers/amenitiesHelper';
 import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation} from '../helpers/scoreHelper'
 
-export const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
+export  const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
     try {
         const { latitude, longitude, radius } = req.query;
 
@@ -31,7 +31,7 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
         //console.log("Evstation:",evStations);
         const resamenities=calculateRatingBasedScore(places);
         const result_=rankAmenities(resamenities, evStations);
-        res.status(200).json({suggestedStations:filterPlaces(result_),
+        res.status(200).json({suggestedStations:filterPlaces(await result_),
             evstations:filterEvStation(evStations)
         })
 
