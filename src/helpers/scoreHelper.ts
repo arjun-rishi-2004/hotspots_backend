@@ -18,13 +18,14 @@ function isWithinRadius(lat1: number, lon1: number, lat2: number, lon2: number, 
     
     return distance <= radiusKm; // Directly return boolean
 }
-
 // Define types for Amenities and Charging Stations
 
 // 🏆 Optimized function to rank amenities
 export async function rankAmenities(amenities: Amenity[], chargingStations: Amenity[]): Promise<Amenity[]> {
     console.log("charging station: ", chargingStations[0]);
     console.log("amenities: ", amenities[1]);
+
+
     
     // Process each amenity - map to promises
     const amenityPromises = amenities.map(async (amenity) => {
@@ -59,6 +60,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
           // Determine the lowest score based on rating
           score = station.rating >= 4 ? Math.min(score, 1) : Math.min(score, 2);
         }
+
       });
       
       // Wait for all station checks to complete
@@ -81,6 +83,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
     return results.sort((a, b) => b.totalScore! - a.totalScore!);
   }
 
+
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 6371; // Earth's radius in km
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -92,7 +95,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c; // Distance in km
 }
 
-async function calculateDistanceUsingOla(
+export async function calculateDistanceUsingOla(
     lat1: number, 
     lon1: number, 
     lat2: number, 
@@ -141,31 +144,42 @@ async function calculateDistanceUsingOla(
 
 
 export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {
+    let MaxCountArray = amenities.map(amenities => amenities.userRatingCount ?? 1);
+    const MaxCount=Math.max(...MaxCountArray)
+    const MaxParts=MaxCount*5/3.5;
     return amenities.map(amenity => {
         const rating = amenity.rating || 0;
         const numReviews = amenity.userRatingCount || 0;
-        let rawScore = (rating * 0.7) + (Math.log(1 + numReviews) * 0.6);
+        const boostingConstant=10000;
+        let parkingScore=0;
+        let rawScore = (rating * 0.42) + ((numReviews/(numReviews+boostingConstant)) * 3.5);
+        // let rawScore=(rating*numReviews)/MaxParts
+        // console.log("rawScore",rawScore);
+        let countBasedScore=rawScore
         if (amenity?.parkingOptions?.freeParkingLot) {
-          rawScore += 0.4;
-      } else if (amenity?.parkingOptions?.paidParkingLot) {
-          rawScore += 0.3;
-      }
-        const normalizedScore = 7 * (1 - Math.exp(-rawScore / 10));
+          rawScore += 1.4
+          parkingScore=1.4
+        } 
+        else if(amenity?.parkingOptions?.paidParkingLot){
+            rawScore+=0.84
+            parkingScore=0.84;
+
+        }
         
-        return { ...amenity, ratingBasedScore: normalizedScore };
+        return { ...amenity, ratingCountScore:countBasedScore,ratingBasedScore: rawScore,parkingBasedScore:parkingScore };
     });
 }
 
 export function filterPlaces(places: Amenity[]) {
-    let scores = places.map(place => place.totalScore ?? 1); // Ensure no zero values
-    let minScore = Math.min(...scores);
-    let maxScore = Math.max(...scores);
+    // let scores = places.map(place => place.totalScore ?? 1); // Ensure no zero values
+    // let minScore = Math.min(...scores);
+    // let maxScore = Math.max(...scores);
  
     return places.map(place => {
-        let normalized = (Math.log((place.totalScore??0)+ 1) - Math.log(minScore + 1)) / 
-                         (Math.log(maxScore + 1) - Math.log(minScore + 1) || 1);
-        let totalWeight = normalized * 9 + 1;  // Scale between 1 and 10
- 
+        // let normalized = (Math.log((place.totalScore??0)+ 1) - Math.log(minScore + 1)) / 
+        //                  (Math.log(maxScore + 1) - Math.log(minScore + 1) || 1);
+        // let totalWeight = normalized * 9 + 1;  // Scale between 1 and 10
+ console.log(place.ratingCountScore)
         return {
             name:place.name,
             id:place.id,
@@ -178,14 +192,17 @@ export function filterPlaces(places: Amenity[]) {
             rating:place.rating,
             userRatingCount:place.userRatingCount,
             photo:filterPhotourl(place.photos),
-            totalWeight: parseFloat(totalWeight.toFixed(1)) ,// Keep 1 decimal place
+            totalWeight: parseFloat(place.totalScore.toFixed(1)) ,// Keep 1 decimal place
+            ratingBasedScore: place.ratingBasedScore ?? 0,
+            chargerBasedScore:place.chargerBasedScore,
+            ratingCountScore:place.ratingCountScore,
+            parkingBasedScore:place.parkingBasedScore,
             isExistingChargeStationFound:place.isExistingChargeStationFound,
             nearestChargeStationDetail:place.nearestChargeStationDetail,
-            distanceOfNearestChargeStation:place.distanceOfNearestChargeStation,
             evChargeOptions:place.evChargeOptions
 
         };
-    });
+    }); 
 }
 const filterPhotourl = (photos?:Photo[]): string[] => {
     if (!photos || photos.length === 0) return [];
