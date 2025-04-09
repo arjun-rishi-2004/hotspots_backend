@@ -37,7 +37,7 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
 
         const suggestedHotspot=filterPlaces(await result_);
         const existingChargeStation=filterEvStation(evStations);
-        exportPlacesToExcel(suggestedHotspot)
+        //exportPlacesToExcel(suggestedHotspot)
         res.status(200).json({suggestedStations:suggestedHotspot,
             evstations:existingChargeStation
 
