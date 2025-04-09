@@ -167,7 +167,7 @@ const flattenedResults = pointResults.flat();
   const uniquePlaces = [];
 
 
-console.log(pointResults.flat().length)
+// console.log(pointResults.flat().length)
   pointResults.flat().forEach(place => {
     //console.log("place:",place);
 
