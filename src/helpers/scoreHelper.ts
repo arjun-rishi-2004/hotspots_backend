@@ -22,8 +22,8 @@ function isWithinRadius(lat1: number, lon1: number, lat2: number, lon2: number, 
 
 // 🏆 Optimized function to rank amenities
 export async function rankAmenities(amenities: Amenity[], chargingStations: Amenity[]): Promise<Amenity[]> {
-    console.log("charging station: ", chargingStations[0]);
-    console.log("amenities: ", amenities[1]);
+    // console.log("charging station: ", chargingStations[0]);
+    // console.log("amenities: ", amenities[1]);
 
 
     
@@ -58,7 +58,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
           });
           
           // Determine the lowest score based on rating
-          score = station.rating >= 4 ? Math.min(score, 1) : Math.min(score, 2);
+          score = station.rating *0.4;
         }
 
       });
@@ -146,7 +146,7 @@ export async function calculateDistanceUsingOla(
 export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {
     let MaxCountArray = amenities.map(amenities => amenities.userRatingCount ?? 1);
     const MaxCount=Math.max(...MaxCountArray)
-    const MaxParts=MaxCount*5/3.5;
+    // const MaxParts=MaxCount*5/3.5;
     return amenities.map(amenity => {
         const rating = amenity.rating || 0;
         const numReviews = amenity.userRatingCount || 0;
@@ -155,7 +155,8 @@ export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {
         let rawScore = (rating * 0.42) + ((numReviews/(numReviews+boostingConstant)) * 3.5);
         // let rawScore=(rating*numReviews)/MaxParts
         // console.log("rawScore",rawScore);
-        let countBasedScore=rawScore
+        let countBasedScore=(numReviews/(numReviews+boostingConstant)) * 3.5
+        //console.log("score",countBasedScore);
         if (amenity?.parkingOptions?.freeParkingLot) {
           rawScore += 1.4
           parkingScore=1.4
@@ -164,6 +165,10 @@ export function calculateRatingBasedScore(amenities:Amenity[]):Amenity[] {
             rawScore+=0.84
             parkingScore=0.84;
 
+        }
+        else if(amenity?.parkingOptions?.freeStreetParking){
+          rawScore+=0.28;
+          parkingScore=0.28
         }
         
         return { ...amenity, ratingCountScore:countBasedScore,ratingBasedScore: rawScore,parkingBasedScore:parkingScore };
@@ -179,7 +184,7 @@ export function filterPlaces(places: Amenity[]) {
         // let normalized = (Math.log((place.totalScore??0)+ 1) - Math.log(minScore + 1)) / 
         //                  (Math.log(maxScore + 1) - Math.log(minScore + 1) || 1);
         // let totalWeight = normalized * 9 + 1;  // Scale between 1 and 10
- console.log(place.ratingCountScore)
+ //console.log(place.ratingCountScore)
         return {
             name:place.name,
             id:place.id,
