@@ -24,7 +24,7 @@ app.get('/api/place-autocomplete', async (req, res) => {
     const response = await axios.get('https://maps.googleapis.com/maps/api/place/autocomplete/json', {
       params: {
         input,
-        key: process.env.GOOGLE_API_KEY,
+        key: process.env.AUTOCOMPLETE_API_KEY,
         components: 'country:IN',
       },
     });
@@ -39,7 +39,7 @@ app.get('/api/place-details', async (req, res) => {
     const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
       params: {
         placeid,
-        key: process.env.GOOGLE_API_KEY,
+        key: process.env.AUTOCOMPLETE_API_KEY,
       },
     });
 
