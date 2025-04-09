@@ -6,3 +6,5 @@ vercel
 *.py
 *.html
 *.txt
+*.xlsx
+src/helpers/exportexcel.ts

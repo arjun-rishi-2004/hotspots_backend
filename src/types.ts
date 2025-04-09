@@ -22,6 +22,8 @@ export interface Amenity {
         paidParkingLot:boolean,
         freeStreetParking:boolean,
     }
+    ratingCountScore:number;
+    parkingBasedScore?:number;
     photos:Photo[];
     isExistingChargeStationFound?:boolean;
     distanceOfNearestChargeStation?:number,
@@ -73,3 +75,34 @@ export interface NearbyChargingStations{
     displayName:string
 
 }
+
+
+export interface FetchNearByPlacesInterface{
+    source: {
+        latitude: number;
+        longitude: number;
+      };
+    evChargers:EvStationResponse[]
+}
+
+interface EvStationResponse {
+    name?: string;
+    id?: string;
+    locationName?: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    rating?: number;
+    userRatingCount?: number;
+    googleMapsUri?: string;
+    evChargeOptions: {
+      connectorcount: number;
+      maxchargerate: number | null;
+      type: string | null;
+      avaliablecount: number;
+      outofserviveCount: number;
+      count: number;
+    };
+  }
+  
+

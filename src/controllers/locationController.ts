@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import { getEVChargingStations } from '../helpers/evHelper';
 import { getPlacesOfInterest} from '../helpers/amenitiesHelper';
-import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation} from '../helpers/scoreHelper'
+import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation,calculateDistanceUsingOla} from '../helpers/scoreHelper'
+// import{exportPlacesToExcel} from '../helpers/exportexcel' 
+import { FetchNearByPlacesInterface } from '../types';
 
-export  const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
+export const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
+
     try {
         const { latitude, longitude, radius } = req.query;
 
@@ -31,8 +34,13 @@ export  const fetchPlaces = async (req: Request, res: Response): Promise<void> =
         //console.log("Evstation:",evStations);
         const resamenities=calculateRatingBasedScore(places);
         const result_=rankAmenities(resamenities, evStations);
-        res.status(200).json({suggestedStations:filterPlaces(await result_),
-            evstations:filterEvStation(evStations)
+
+        const suggestedHotspot=filterPlaces(await result_);
+        const existingChargeStation=filterEvStation(evStations);
+        //exportPlacesToExcel(suggestedHotspot)
+        res.status(200).json({suggestedStations:suggestedHotspot,
+            evstations:existingChargeStation
+
         })
 
     } catch (error) {
@@ -40,3 +48,27 @@ export  const fetchPlaces = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+
+
+export const fetchNearByPlaces=async(req:Request, res:Response):Promise<void>=>{
+    try{
+        const { source, evChargers }: FetchNearByPlacesInterface = req.body;
+    const { latitude: sourceLatitude, longitude: sourceLongitude } = source;
+        const result=await Promise.all(evChargers.map(async (ev)=>{
+           const dist=await calculateDistanceUsingOla(sourceLatitude,sourceLongitude,ev.latitude,ev.longitude)
+           return{
+            id:`existing_${ev.id}`,
+            placeId:ev.id,
+            latitude:ev.latitude,
+            longitude:ev.longitude,
+            distance:dist
+           }
+        }))
+        res.status(200).json({source:{latitude:sourceLatitude,
+            longitude:sourceLongitude},destination:result})
+    }catch (error) {
+        console.error("Error fetching distance:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
