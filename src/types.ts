@@ -78,9 +78,11 @@ export interface NearbyChargingStations{
 
 
 export interface FetchNearByPlacesInterface{
+    
     source: {
         latitude: number;
         longitude: number;
+        locationName:string;
       };
     evChargers:EvStationResponse[]
 }

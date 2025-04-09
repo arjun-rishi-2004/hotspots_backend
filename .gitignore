@@ -8,3 +8,4 @@ vercel
 *.txt
 *.xlsx
 src/helpers/exportexcel.ts
+src/helpers/polyLine.ts

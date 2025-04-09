@@ -53,12 +53,13 @@ export const fetchPlaces = async (req: Request, res: Response): Promise<void> =>
 
 export const fetchNearByPlaces=async(req:Request, res:Response):Promise<void>=>{
     try{
-        const { source, evChargers }: FetchNearByPlacesInterface = req.body;
-    const { latitude: sourceLatitude, longitude: sourceLongitude } = source;
+        const { source,evChargers }: FetchNearByPlacesInterface = req.body;
+    const { latitude: sourceLatitude, longitude: sourceLongitude ,locationName } = source;
         const result=await Promise.all(evChargers.map(async (ev)=>{
            const dist=await calculateDistanceUsingOla(sourceLatitude,sourceLongitude,ev.latitude,ev.longitude)
            return{
             id:`existing_${ev.id}`,
+            locationName:ev.locationName,
             placeId:ev.id,
             latitude:ev.latitude,
             longitude:ev.longitude,
@@ -66,6 +67,7 @@ export const fetchNearByPlaces=async(req:Request, res:Response):Promise<void>=>{
            }
         }))
         res.status(200).json({source:{latitude:sourceLatitude,
+            locationName :locationName ,
             longitude:sourceLongitude},destination:result})
     }catch (error) {
         console.error("Error fetching distance:", error);
