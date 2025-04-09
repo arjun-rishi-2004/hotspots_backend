@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { getEVChargingStations } from '../helpers/evHelper';
 import { getPlacesOfInterest} from '../helpers/amenitiesHelper';
 import {calculateRatingBasedScore,rankAmenities,filterPlaces,filterEvStation,calculateDistanceUsingOla} from '../helpers/scoreHelper'
-import{exportPlacesToExcel} from '../helpers/exportexcel' 
+// import{exportPlacesToExcel} from '../helpers/exportexcel' 
 import { FetchNearByPlacesInterface } from '../types';
 
 export const fetchPlaces = async (req: Request, res: Response): Promise<void> => {
