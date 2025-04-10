@@ -221,46 +221,7 @@ const filterPhotourl = (photos?:Photo[]): string[] => {
         return ''; // or you can choose to filter it out later
     }).filter(url => url !== '');
 };
-// const filterPhotourl1 = (photos?:Photo[]): any => {
-//     if (!photos || photos.length === 0) return [];
 
-//     return photos.map(ph => {
-//         // console.log("Photo_Url :",ph.flagContentUri)
-//         return getImageSrc(ph.flagContentUri); // or you can choose to filter it out later
-//     });
-// };
-
-// async function getImageSrc(url):Promise<any> {
-//     try {
-//         // Fetch the HTML content of the page
-//         let response = await fetch(url, {
-//             headers: { "User-Agent": "Mozilla/5.0" }
-//         });
- 
-//         if (!response.ok) {
-//             throw new Error(`Failed to fetch page, status: ${response.status}`);
-//         }
- 
-//         let html = await response.text();
- 
-//         // Parse the HTML
-//         let parser = new DOMParser();
-//         let doc = parser.parseFromString(html, "text/html");
- 
-//         // Find the image element with id "preview-image"
-//         let imgTag = doc.querySelector("#preview-image");
- 
-//         if (imgTag) {
-//             return imgTag.src;
-//         } else {
-//             throw new Error("Image with id 'preview-image' not found.");
-//         }
- 
-//     } catch (error) {
-//         console.error(error);
-//         return null;
-//     }
-// }
 export const createType=(place:Amenity):string[]=>{
     let types=[...place.types]
     if(place?.outdoorSeating) types.push("Outdoor seating");
@@ -285,6 +246,7 @@ export const filterEvStation=(Evstations:Amenity[])=>{
             rating: Evstation?.rating,
             userRatingCount: Evstation?.userRatingCount,
             googleMapsUri: Evstation?.googleMapsUri,
+            photo:filterPhotourl(Evstation.photos), 
             evChargeOptions: Evstation?.evChargeOptions && Object.keys(Evstation.evChargeOptions).length > 0 ? {
                 connectorcount: Evstation.evChargeOptions.connectorCount ?? 0,
                 maxchargerate: Evstation.evChargeOptions.connectorAggregation?.length
@@ -310,6 +272,7 @@ export const filterEvStation=(Evstations:Amenity[])=>{
                 outofserviveCount: 0,
                 count: 0
             }
+           
         };
         
     });
