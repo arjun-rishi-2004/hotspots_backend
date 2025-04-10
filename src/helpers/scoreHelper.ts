@@ -32,7 +32,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
       let score = 3; // Default highest priority
       let foundStation = false;
       let nearbyChargingStations: NearbyChargingStations[] = [];
-      
+      let ratingSum=0
       // Process each charging station for this amenity
       // Make this inner function async too
       const stationPromises = chargingStations.map(async (station) => {
@@ -45,7 +45,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
             amenity.location.latitude, amenity.location.longitude,
             station.location.latitude, station.location.longitude
           );
-          
+          ratingSum+=station.rating??0
           foundStation = true;
           nearbyChargingStations.push({
             location: {
@@ -55,13 +55,18 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
             markerID: `existing_${station.id}`,
             displayName: station.displayName.text,
             distance: parseFloat(distanceKm.toFixed(2)) * 1000  // Convert km to meters
-          });
+          })
           
           // Determine the lowest score based on rating
-          score = station.rating *0.4;
+         
         }
 
       });
+
+      if(foundStation){
+        score=(ratingSum/nearbyChargingStations.length)*0.4
+      }
+      
       
       // Wait for all station checks to complete
       await Promise.all(stationPromises);
