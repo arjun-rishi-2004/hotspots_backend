@@ -45,7 +45,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
             amenity.location.latitude, amenity.location.longitude,
             station.location.latitude, station.location.longitude
           );
-          rating=Math.max(rating,station.rating)
+          rating=Math.max(rating,station.rating??0)
           foundStation = true;
           nearbyChargingStations.push({
             location: {
@@ -68,7 +68,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
       await Promise.all(stationPromises);
       if(nearbyChargingStations.length!==0){
         // console.log(`rating ${amenity.displayName.text}`,rating);
-        
+
         score=2-(rating*0.4)
 
 
