@@ -32,7 +32,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
       let score = 3; // Default highest priority
       let foundStation = false;
       let nearbyChargingStations: NearbyChargingStations[] = [];
-      let ratingSum=0
+      let rating=0
       // Process each charging station for this amenity
       // Make this inner function async too
       const stationPromises = chargingStations.map(async (station) => {
@@ -45,7 +45,7 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
             amenity.location.latitude, amenity.location.longitude,
             station.location.latitude, station.location.longitude
           );
-          ratingSum+=station.rating??0
+          rating=Math.max(rating,station.rating)
           foundStation = true;
           nearbyChargingStations.push({
             location: {
@@ -63,13 +63,18 @@ export async function rankAmenities(amenities: Amenity[], chargingStations: Amen
 
       });
 
-      if(foundStation){
-        score=(ratingSum/nearbyChargingStations.length)*0.4
-      }
-      
-      
+
       // Wait for all station checks to complete
       await Promise.all(stationPromises);
+      if(nearbyChargingStations.length!==0){
+        // console.log(`rating ${amenity.displayName.text}`,rating);
+        
+        score=2-(rating*0.4)
+
+
+      }
+      
+      // console.log(`${foundStation}${amenity.displayName.text}=${score}`);
       
       // Return the enriched amenity
       return {
