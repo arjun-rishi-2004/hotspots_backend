@@ -2,11 +2,10 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from "fs"
 dotenv.config();
-const API_KEY = process.env.GOOGLE_API_KEY!;
+const API_KEY = process.env.GOOGLE_API_KEY;
 const BASE_URL = 'https://places.googleapis.com/v1/places:searchNearby';
 
 // List of place types to fetch
-const POI_TYPES = ["restaurant", "cafe", "shopping_mall", "movie_theater", "hotel"];
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371000; // Earth radius in meters
@@ -31,9 +30,10 @@ function isWithinRadius(centerLat, centerLon, checkLat, checkLon, radius) {
 }
 
 // Main function to get places of interest
-export async function getPlacesOfInterest(lat, lon, radius) {
+export async function getPlacesOfInterest(lat, lon, radius,types) {
   const distance = radius * 0.6;
   const searchRadius = radius * 0.7;
+const POI_TYPES = types.length!==0?types:["restaurant", "cafe", "shopping_mall", "movie_theater", "hotel"];
 
   const samplePoints = [
     { lat, lon, color: "yellow" }, // Center
