@@ -108,3 +108,32 @@ interface EvStationResponse {
   }
   
 
+  export interface RouteData {
+    encodedPolyline: string;
+    distance:number;
+    decodedPoints: [number, number][];
+  }
+
+  
+export interface SplitPolylineResult {
+    polylines: string[];
+   
+  };
+
+ export interface Coordinate {
+    latitude: number;
+    longitude: number;
+  }
+  
+ export  interface RouteRequestBody {
+    origin: Coordinate;
+    destination: Coordinate;
+  }
+
+export type LatLngTuple = [number, number];
+export type Segment = { start: number; end: number; status: number };
+export type TrafficSegment = {
+  startCoord: Coordinate;
+  endCoord: Coordinate;
+  status: number;
+};
